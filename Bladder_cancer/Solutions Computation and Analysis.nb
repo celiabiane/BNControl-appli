@@ -1,0 +1,1361 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     54852,       1353]
+NotebookOptionsPosition[     48481,       1235]
+NotebookOutlinePosition[     48827,       1250]
+CellTagsIndexPosition[     48784,       1247]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["ActoNet : Bladder Model inference of solutions and Analysis", "Title",
+ CellChangeTimes->{{3.724745411886364*^9, 3.724745436534407*^9}, {
+  3.726565005624401*^9, 3.7265650154836187`*^9}, {3.7270177883723307`*^9, 
+  3.727017803113174*^9}, {3.7270966175005107`*^9, 
+  3.727096617770511*^9}},ExpressionUUID->"e78a271f-5ea1-4d1e-9b33-\
+77c77cb1b055"],
+
+Cell["\<\
+In this notebook, we compute the inference solutions for the necessary and \
+possible Proliferation marking on the Booleanized wild type model published \
+in Remy et al. (2015)\
+\>", "Text",
+ CellChangeTimes->{{3.7270178186740637`*^9, 
+  3.72701793837191*^9}},ExpressionUUID->"0d78c847-2351-4aec-8680-\
+c53e7285c944"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"SetDirectory", "[", 
+  RowBox[{"NotebookDirectory", "[", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.722937086832029*^9, 3.7229370930093822`*^9}, {
+  3.7229374182969875`*^9, 
+  3.722937424864363*^9}},ExpressionUUID->"8f39a2d4-9907-4777-bde9-\
+fd438b5c34ca"],
+
+Cell[BoxData["\<\"C:\\\\Users\\\\C\[EAcute]lia\\\\Dropbox\\\\Bladder\"\>"], \
+"Output",
+ CellChangeTimes->{
+  3.722937093510411*^9, 3.722937425243385*^9, 3.724073293784719*^9, 
+   3.724153396523692*^9, 3.724577320045836*^9, 3.724590668929221*^9, 
+   3.7245907599816923`*^9, 3.724657349616*^9, 3.7246703179664884`*^9, 
+   3.7246748862543125`*^9, 3.7246753764663734`*^9, {3.7246787265640583`*^9, 
+   3.7246787534897056`*^9}, 3.7247454467056255`*^9, {3.724758690097416*^9, 
+   3.724758711032653*^9}, 3.724759406327075*^9, 3.7247594973386345`*^9, 
+   3.7247633127002053`*^9, 3.7247689539111123`*^9, 3.724859948887274*^9, 
+   3.7250168182990136`*^9, 3.7251035731777725`*^9, 3.7251888659132557`*^9, 
+   3.726399939379447*^9, 3.7265667390873365`*^9, 3.726567109615588*^9, 
+   3.7270274018746576`*^9},ExpressionUUID->"2d93e1ef-56a9-4122-b241-\
+da9d3801fe0f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Solutions computation", "Section",
+ CellChangeTimes->{{3.7247590056569705`*^9, 3.7247590080281744`*^9}, {
+   3.7265650683521113`*^9, 3.7265650743425217`*^9}, {3.7265651997989426`*^9, 
+   3.7265652083945575`*^9}, 3.7265653690012407`*^9, {3.7270183399618797`*^9, 
+   3.7270183460322275`*^9}},ExpressionUUID->"2dd918be-20f1-4114-90f0-\
+19ef02174175"],
+
+Cell[CellGroupData[{
+
+Cell["Bladder model", "Subsection",
+ CellChangeTimes->{{3.7195762856087627`*^9, 3.7195762896659946`*^9}, {
+  3.7265653789384575`*^9, 
+  3.726565381231662*^9}},ExpressionUUID->"376dfa3a-b959-4764-a142-\
+f2fe30c105ae"],
+
+Cell["\<\
+F1 describes the Booleanized wild type network published in Remy et al. (2015)\
+\>", "Text",
+ CellChangeTimes->{{3.7270179511386404`*^9, 
+  3.727018027058983*^9}},ExpressionUUID->"750ca705-169e-49b1-870c-\
+626a06557109"],
+
+Cell[BoxData[
+ RowBox[{"F1", "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{
+    "EGFR\[HorizontalLine]stimulus", "\[Rule]", 
+     "EGFR\[HorizontalLine]stimulus"}], ",", 
+    RowBox[{
+    "FGFR3\[HorizontalLine]stimulus", "\[Rule]", 
+     "FGFR3\[HorizontalLine]stimulus"}], ",", 
+    RowBox[{"DNAdamage", "\[Rule]", "DNAdamage"}], ",", 
+    RowBox[{"GrowthInhibitors", "\[Rule]", "GrowthInhibitors"}], ",", 
+    RowBox[{"Proliferation", "\[Rule]", 
+     RowBox[{"CyclinA", "||", "CyclinE1"}]}], ",", 
+    RowBox[{"Apoptosis", "\[Rule]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"E2F1", "||", 
+        RowBox[{"!", "E2F1\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F1\[Lambda]2", "||", "TP53"}], ")"}]}]}], ",", 
+    RowBox[{"Apoptosis\[Lambda]2", "\[Rule]", 
+     RowBox[{"E2F1", "&&", "E2F1\[Lambda]2"}]}], ",", 
+    RowBox[{"Growth\[HorizontalLine]Arrest", "\[Rule]", 
+     RowBox[{"p21CIP", "||", "RB1", "||", "RBL2"}]}], ",", 
+    RowBox[{"EGFR", "\[Rule]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"EGFR\[HorizontalLine]stimulus", "||", "SPRY"}], ")"}], "&&", 
+      RowBox[{"!", "FGFR3"}], "&&", 
+      RowBox[{"!", "GRB2"}]}]}], ",", 
+    RowBox[{"FGFR3", "\[Rule]", 
+     RowBox[{
+      RowBox[{"!", "EGFR"}], "&&", "FGFR3\[HorizontalLine]stimulus", "&&", 
+      RowBox[{"!", "GRB2"}]}]}], ",", 
+    RowBox[{"RAS", "\[Rule]", 
+     RowBox[{"EGFR", "||", "FGFR3", "||", "GRB2"}]}], ",", 
+    RowBox[{"E2F1", "\[Rule]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"ATM", "||", 
+        RowBox[{"!", "ATM\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"CHEK1\[HorizontalLine]2", "||", 
+        RowBox[{"!", "CHEK1\[HorizontalLine]2\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F3", "||", 
+        RowBox[{"!", "E2F3\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F3", "||", "RAS"}], ")"}], "&&", 
+      RowBox[{"!", "RB1"}], "&&", 
+      RowBox[{"!", "RBL2"}]}]}], ",", 
+    RowBox[{"E2F1\[Lambda]2", "\[Rule]", 
+     RowBox[{
+     "ATM", "&&", "ATM\[Lambda]2", "&&", "CHEK1\[HorizontalLine]2", "&&", 
+      "CHEK1\[HorizontalLine]2\[Lambda]2", "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F3", "||", 
+        RowBox[{"!", "E2F3\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F3\[Lambda]2", "||", "RAS"}], ")"}], "&&", 
+      RowBox[{"!", "RB1"}], "&&", 
+      RowBox[{"!", "RBL2"}]}]}], ",", 
+    RowBox[{"E2F3", "\[Rule]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"CHEK1\[HorizontalLine]2", "||", 
+        RowBox[{"!", "CHEK1\[HorizontalLine]2\[Lambda]2"}]}], ")"}], "&&", 
+      "RAS", "&&", 
+      RowBox[{"!", "RB1"}]}]}], ",", 
+    RowBox[{"E2F3\[Lambda]2", "\[Rule]", 
+     RowBox[{
+     "CHEK1\[HorizontalLine]2", "&&", "CHEK1\[HorizontalLine]2\[Lambda]2", "&&",
+       "RAS", "&&", 
+      RowBox[{"!", "RB1"}]}]}], ",", 
+    RowBox[{"CyclinD1", "\[Rule]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"AKT", "||", "RAS"}], ")"}], "&&", 
+      RowBox[{"!", "p16INK4a"}], "&&", 
+      RowBox[{"!", "p21CIP"}]}]}], ",", 
+    RowBox[{"CyclinE1", "\[Rule]", 
+     RowBox[{"CDC25A", "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F1", "||", 
+        RowBox[{"!", "E2F1\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F1", "||", "E2F3"}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F3", "||", 
+        RowBox[{"!", "E2F3\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"!", "p21CIP"}], "&&", 
+      RowBox[{"!", "RBL2"}]}]}], ",", 
+    RowBox[{"CyclinA", "\[Rule]", 
+     RowBox[{"CDC25A", "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F1", "||", 
+        RowBox[{"!", "E2F1\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F1", "||", "E2F3"}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F3", "||", 
+        RowBox[{"!", "E2F3\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"!", "p21CIP"}], "&&", 
+      RowBox[{"!", "RBL2"}]}]}], ",", 
+    RowBox[{"CDC25A", "\[Rule]", 
+     RowBox[{
+      RowBox[{"!", "CHEK1\[HorizontalLine]2"}], "&&", 
+      RowBox[{"!", "CHEK1\[HorizontalLine]2\[Lambda]2"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F1", "||", 
+        RowBox[{"!", "E2F1\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F1", "||", "E2F3"}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F3", "||", 
+        RowBox[{"!", "E2F3\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"!", "RBL2"}]}]}], ",", 
+    RowBox[{"p16INK4a", "\[Rule]", 
+     RowBox[{"GrowthInhibitors", "&&", 
+      RowBox[{"!", "RB1"}]}]}], ",", 
+    RowBox[{"RB1", "\[Rule]", 
+     RowBox[{
+      RowBox[{"!", "CyclinA"}], "&&", 
+      RowBox[{"!", "CyclinD1"}], "&&", 
+      RowBox[{"!", "CyclinE1"}], "&&", 
+      RowBox[{"!", "p16INK4a"}]}]}], ",", 
+    RowBox[{"RBL2", "\[Rule]", 
+     RowBox[{
+      RowBox[{"!", "CyclinD1"}], "&&", 
+      RowBox[{"!", "CyclinE1"}]}]}], ",", 
+    RowBox[{"p21CIP", "\[Rule]", 
+     RowBox[{
+      RowBox[{"!", "AKT"}], "&&", 
+      RowBox[{"!", "CyclinE1"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"GrowthInhibitors", "||", "TP53"}], ")"}]}]}], ",", 
+    RowBox[{"ATM", "\[Rule]", 
+     RowBox[{"DNAdamage", "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F1", "||", 
+        RowBox[{"!", "E2F1\[Lambda]2"}]}], ")"}]}]}], ",", 
+    RowBox[{"ATM\[Lambda]2", "\[Rule]", 
+     RowBox[{"DNAdamage", "&&", "E2F1"}]}], ",", 
+    RowBox[{"CHEK1\[HorizontalLine]2", "\[Rule]", 
+     RowBox[{"ATM", "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F1", "||", 
+        RowBox[{"!", "E2F1\[Lambda]2"}]}], ")"}]}]}], ",", 
+    RowBox[{"CHEK1\[HorizontalLine]2\[Lambda]2", "\[Rule]", 
+     RowBox[{"ATM", "&&", "E2F1"}]}], ",", 
+    RowBox[{"MDM2", "\[Rule]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"AKT", "||", "TP53"}], ")"}], "&&", 
+      RowBox[{"!", "ATM"}], "&&", 
+      RowBox[{"!", "ATM\[Lambda]2"}], "&&", 
+      RowBox[{"!", "p14ARF"}], "&&", 
+      RowBox[{"!", "RB1"}]}]}], ",", 
+    RowBox[{"TP53", "\[Rule]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"ATM", "||", 
+        RowBox[{"!", "ATM\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"ATM", "||", "E2F1\[Lambda]2"}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"CHEK1\[HorizontalLine]2", "||", 
+        RowBox[{"!", "CHEK1\[HorizontalLine]2\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"CHEK1\[HorizontalLine]2", "||", "E2F1\[Lambda]2"}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"E2F1", "||", 
+        RowBox[{"!", "E2F1\[Lambda]2"}]}], ")"}], "&&", 
+      RowBox[{"!", "MDM2"}]}]}], ",", 
+    RowBox[{"p14ARF", "\[Rule]", "E2F1"}], ",", 
+    RowBox[{"PTEN", "\[Rule]", "TP53"}], ",", 
+    RowBox[{"PI3K", "\[Rule]", 
+     RowBox[{"GRB2", "&&", 
+      RowBox[{"!", "PTEN"}], "&&", "RAS"}]}], ",", 
+    RowBox[{"AKT", "\[Rule]", "PI3K"}], ",", 
+    RowBox[{"GRB2", "\[Rule]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"EGFR", "||", "FGFR3"}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"EGFR", "||", 
+        RowBox[{"!", "GRB2"}]}], ")"}], "&&", 
+      RowBox[{"(", 
+       RowBox[{"EGFR", "||", 
+        RowBox[{"!", "SPRY"}]}], ")"}]}]}], ",", 
+    RowBox[{"SPRY", "\[Rule]", "RAS"}]}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.7199200374230423`*^9, 
+  3.719920046689459*^9}},ExpressionUUID->"9f23bd3d-2942-4d8a-b8d6-\
+8b948b7e1efe"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"TeXForm", "[", 
+  RowBox[{"TableForm", "[", "F1", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.7426456533613987`*^9, 3.7426457104026613`*^9}, 
+   3.742648534285178*^9},ExpressionUUID->"36ff1395-25cb-49b6-b577-\
+479a84c4e5e3"],
+
+Cell["\<\
+\\begin{array}{c}
+ \\text{EGFR_stimulus}\\to \\text{EGFR_stimulus} \\\\
+ \\text{FGFR3_stimulus}\\to \\text{FGFR3_stimulus} \\\\
+ \\text{DNAdamage}\\to \\text{DNAdamage} \\\\
+ \\text{GrowthInhibitors}\\to \\text{GrowthInhibitors} \\\\
+ \\text{Proliferation}\\to \\text{CyclinA}\\lor \\text{CyclinE1} \\\\
+ \\text{Apoptosis}\\to (\\text{E2F1}\\lor \\neg \\text{E2F1$\\lambda \
+$2})\\land (\\text{E2F1$\\lambda $2}\\lor \\text{TP53}) \\\\
+ \\text{Apoptosis$\\lambda $2}\\to \\text{E2F1}\\land \\text{E2F1$\\lambda \
+$2} \\\\
+ \\text{Growth_Arrest}\\to \\text{p21CIP}\\lor \\text{RB1}\\lor \\text{RBL2} \
+\\\\
+ \\text{EGFR}\\to (\\text{EGFR_stimulus}\\lor \\text{SPRY})\\land \\neg \
+\\text{FGFR3}\\land \\neg \\text{GRB2} \\\\
+ \\text{FGFR3}\\to \\neg \\text{EGFR}\\land \\text{FGFR3_stimulus}\\land \
+\\neg \\text{GRB2} \\\\
+ \\text{RAS}\\to \\text{EGFR}\\lor \\text{FGFR3}\\lor \\text{GRB2} \\\\
+ \\text{E2F1}\\to (\\text{ATM}\\lor \\neg \\text{ATM$\\lambda $2})\\land \
+(\\text{CHEK1_2}\\lor \\neg \\text{CHEK1_2$\\lambda $2})\\land \
+(\\text{E2F3}\\lor \\neg \\text{E2F3$\\lambda
+   $2})\\land (\\text{E2F3}\\lor \\text{RAS})\\land \\neg \\text{RB1}\\land \
+\\neg \\text{RBL2} \\\\
+ \\text{E2F1$\\lambda $2}\\to \\text{ATM}\\land \\text{ATM$\\lambda $2}\\land \
+\\text{CHEK1_2}\\land \\text{CHEK1_2$\\lambda $2}\\land (\\text{E2F3}\\lor \
+\\neg \\text{E2F3$\\lambda
+   $2})\\land (\\text{E2F3$\\lambda $2}\\lor \\text{RAS})\\land \\neg \
+\\text{RB1}\\land \\neg \\text{RBL2} \\\\
+ \\text{E2F3}\\to (\\text{CHEK1_2}\\lor \\neg \\text{CHEK1_2$\\lambda \
+$2})\\land \\text{RAS}\\land \\neg \\text{RB1} \\\\
+ \\text{E2F3$\\lambda $2}\\to \\text{CHEK1_2}\\land \\text{CHEK1_2$\\lambda \
+$2}\\land \\text{RAS}\\land \\neg \\text{RB1} \\\\
+ \\text{CyclinD1}\\to (\\text{AKT}\\lor \\text{RAS})\\land \\neg \
+\\text{p16INK4a}\\land \\neg \\text{p21CIP} \\\\
+ \\text{CyclinE1}\\to \\text{CDC25A}\\land (\\text{E2F1}\\lor \\neg \
+\\text{E2F1$\\lambda $2})\\land (\\text{E2F1}\\lor \\text{E2F3})\\land \
+(\\text{E2F3}\\lor \\neg
+   \\text{E2F3$\\lambda $2})\\land \\neg \\text{p21CIP}\\land \\neg \
+\\text{RBL2} \\\\
+ \\text{CyclinA}\\to \\text{CDC25A}\\land (\\text{E2F1}\\lor \\neg \
+\\text{E2F1$\\lambda $2})\\land (\\text{E2F1}\\lor \\text{E2F3})\\land \
+(\\text{E2F3}\\lor \\neg
+   \\text{E2F3$\\lambda $2})\\land \\neg \\text{p21CIP}\\land \\neg \
+\\text{RBL2} \\\\
+ \\text{CDC25A}\\to \\neg \\text{CHEK1_2}\\land \\neg \\text{CHEK1_2$\\lambda \
+$2}\\land (\\text{E2F1}\\lor \\neg \\text{E2F1$\\lambda $2})\\land \
+(\\text{E2F1}\\lor
+   \\text{E2F3})\\land (\\text{E2F3}\\lor \\neg \\text{E2F3$\\lambda \
+$2})\\land \\neg \\text{RBL2} \\\\
+ \\text{p16INK4a}\\to \\text{GrowthInhibitors}\\land \\neg \\text{RB1} \\\\
+ \\text{RB1}\\to \\neg \\text{CyclinA}\\land \\neg \\text{CyclinD1}\\land \
+\\neg \\text{CyclinE1}\\land \\neg \\text{p16INK4a} \\\\
+ \\text{RBL2}\\to \\neg \\text{CyclinD1}\\land \\neg \\text{CyclinE1} \\\\
+ \\text{p21CIP}\\to \\neg \\text{AKT}\\land \\neg \\text{CyclinE1}\\land \
+(\\text{GrowthInhibitors}\\lor \\text{TP53}) \\\\
+ \\text{ATM}\\to \\text{DNAdamage}\\land (\\text{E2F1}\\lor \\neg \
+\\text{E2F1$\\lambda $2}) \\\\
+ \\text{ATM$\\lambda $2}\\to \\text{DNAdamage}\\land \\text{E2F1} \\\\
+ \\text{CHEK1_2}\\to \\text{ATM}\\land (\\text{E2F1}\\lor \\neg \
+\\text{E2F1$\\lambda $2}) \\\\
+ \\text{CHEK1_2$\\lambda $2}\\to \\text{ATM}\\land \\text{E2F1} \\\\
+ \\text{MDM2}\\to (\\text{AKT}\\lor \\text{TP53})\\land \\neg \
+\\text{ATM}\\land \\neg \\text{ATM$\\lambda $2}\\land \\neg \
+\\text{p14ARF}\\land \\neg \\text{RB1} \\\\
+ \\text{TP53}\\to (\\text{ATM}\\lor \\neg \\text{ATM$\\lambda $2})\\land \
+(\\text{ATM}\\lor \\text{E2F1$\\lambda $2})\\land (\\text{CHEK1_2}\\lor \\neg \
+\\text{CHEK1_2$\\lambda
+   $2})\\land (\\text{CHEK1_2}\\lor \\text{E2F1$\\lambda $2})\\land \
+(\\text{E2F1}\\lor \\neg \\text{E2F1$\\lambda $2})\\land \\neg \\text{MDM2} \
+\\\\
+ \\text{p14ARF}\\to \\text{E2F1} \\\\
+ \\text{PTEN}\\to \\text{TP53} \\\\
+ \\text{PI3K}\\to \\text{GRB2}\\land \\neg \\text{PTEN}\\land \\text{RAS} \\\\
+ \\text{AKT}\\to \\text{PI3K} \\\\
+ \\text{GRB2}\\to (\\text{EGFR}\\lor \\text{FGFR3})\\land (\\text{EGFR}\\lor \
+\\neg \\text{GRB2})\\land (\\text{EGFR}\\lor \\neg \\text{SPRY}) \\\\
+ \\text{SPRY}\\to \\text{RAS} \\\\
+\\end{array}\
+\>", "Output",
+ CellChangeTimes->{3.742645711365717*^9, 
+  3.742648534954217*^9},ExpressionUUID->"332e556e-adf0-4781-8063-\
+22f2e06314e2"]
+}, Open  ]],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.7426457075154963`*^9, 
+  3.742645708465551*^9}},ExpressionUUID->"46ec3e94-a1ed-48f8-8195-\
+8b9997d89ebf"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Controlled variables", "Subsection",
+ CellChangeTimes->{{3.7195762856087627`*^9, 3.7195762896659946`*^9}, {
+  3.7265653789384575`*^9, 3.726565381231662*^9}, {3.726565492990258*^9, 
+  3.726565495595463*^9}},ExpressionUUID->"80af4296-e83d-44ed-a135-\
+546490e2f6fd"],
+
+Cell["\<\
+The controlled variables correspond to the oncogenes and tumor supressors \
+studied  in Remy et al. (2015)\
+\>", "Text",
+ CellChangeTimes->{{3.7270179511386404`*^9, 
+  3.727018086258369*^9}},ExpressionUUID->"2ef91284-bde7-4ee6-bc29-\
+8c41844cdaf4"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"controlledvar", "=", 
+  RowBox[{"{", 
+   RowBox[{
+   "TP53", ",", "E2F3", ",", " ", "E2F3\[Lambda]2", ",", " ", "FGFR3", ",", 
+    "p16INK4a", ",", "RAS", ",", "CyclinD1", ",", " ", "PI3K", ",", "MDM2", 
+    ",", "EGFR", ",", " ", "RBL2", ",", "RB1"}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.715511569446357*^9, 3.7155115913936124`*^9}, {
+   3.718018172938469*^9, 3.7180181750984716`*^9}, {3.718018213110525*^9, 
+   3.718018273272609*^9}, 3.7195814708856034`*^9, {3.7195816753712993`*^9, 
+   3.719581687242978*^9}, {3.7199081556052294`*^9, 3.7199081698168545`*^9}, {
+   3.719908203107313*^9, 3.7199082426533823`*^9}, {3.7205166860011024`*^9, 
+   3.720516718785763*^9}},ExpressionUUID->"200574e2-d517-457e-ab5c-\
+b2252f7fd1d1"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "TP53", ",", "E2F3", ",", "E2F3\[Lambda]2", ",", "FGFR3", ",", "p16INK4a", 
+   ",", "RAS", ",", "CyclinD1", ",", "PI3K", ",", "MDM2", ",", "EGFR", ",", 
+   "RBL2", ",", "RB1"}], "}"}]], "Output",
+ CellChangeTimes->{3.7196731327802052`*^9, 3.7199084171004715`*^9, 
+  3.7199086417252665`*^9, 3.7199201513656425`*^9, 3.7201806190266876`*^9, 
+  3.7205167243790307`*^9, 3.721045989895645*^9, 3.7265667407721395`*^9, 
+  3.726567111721592*^9, 3.7270274267257214`*^9, 
+  3.7270771684376636`*^9},ExpressionUUID->"8f3dac0d-60c8-432e-8a30-\
+820b88c3e57b"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Marking", "Subsection",
+ CellChangeTimes->{{3.7195762856087627`*^9, 3.7195762896659946`*^9}, {
+  3.7265653789384575`*^9, 3.726565381231662*^9}, {3.726565492990258*^9, 
+  3.726565495595463*^9}, {3.7265670402578664`*^9, 3.7265670411002674`*^9}, {
+  3.727077169987666*^9, 
+  3.7270771726076694`*^9}},ExpressionUUID->"a6a5608b-8d80-4823-ba26-\
+2ca677cd5251"],
+
+Cell["proliferation correspond to the target marking.", "Text",
+ CellChangeTimes->{{3.72701810201227*^9, 
+  3.7270181459387827`*^9}},ExpressionUUID->"5d180e14-3686-4e43-9870-\
+ce6211e2d1d6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"proliferation", "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"Apoptosis", "\[Rule]", "False"}], ",", 
+    RowBox[{"Apoptosis\[Lambda]2", "\[Rule]", "False"}], ",", 
+    RowBox[{"Proliferation", "\[Rule]", "True"}], ",", " ", 
+    RowBox[{"Growth\[HorizontalLine]Arrest", "\[Rule]", "False"}]}], 
+   "}"}]}]], "Input",ExpressionUUID->"cd96c85d-ca26-420e-934d-565cfd1ab794"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"Apoptosis", "\[Rule]", "False"}], ",", 
+   RowBox[{"Apoptosis\[Lambda]2", "\[Rule]", "False"}], ",", 
+   RowBox[{"Proliferation", "\[Rule]", "True"}], ",", 
+   RowBox[{"Growth\[HorizontalLine]Arrest", "\[Rule]", "False"}]}], 
+  "}"}]], "Output",
+ CellChangeTimes->{3.726567111752792*^9, 3.7270176205787334`*^9, 
+  3.727027429642926*^9, 
+  3.727077187728691*^9},ExpressionUUID->"3cd6576d-e9f7-4cbb-8fb2-\
+5ef02d103624"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Inference for necessary & possible proliferation", "Subsection",
+ CellChangeTimes->{{3.7195762856087627`*^9, 3.7195762896659946`*^9}, {
+  3.7265653789384575`*^9, 3.726565381231662*^9}, {3.726565492990258*^9, 
+  3.7265655267487173`*^9}, {3.727018161787689*^9, 
+  3.727018167209999*^9}},ExpressionUUID->"64f721a4-b63c-47da-80f6-\
+53a9f9358b8f"],
+
+Cell["\<\
+Here, we compute the inference solutions on windows of 7 controlled \
+variables, the result of the computation is in file NecessaryP.\
+\>", "Text",
+ CellChangeTimes->{{3.72701810201227*^9, 3.7270181459387827`*^9}, {
+  3.7270181771635685`*^9, 
+  3.727018241810266*^9}},ExpressionUUID->"984a43bc-c973-45d0-9e54-\
+53a1d87d7cdb"],
+
+Cell[BoxData[
+ RowBox[{"CoreSubset", "[", 
+  RowBox[{
+  "F1", ",", "proliferation", ",", "proliferation", ",", "controlledvar", ",",
+    "7", ",", "\"\<NecessaryP\>\""}], "]"}]], "Input",
+ CellChangeTimes->{{3.71958179409809*^9, 3.7195818146182637`*^9}, {
+   3.719583670415599*^9, 3.7195837036725006`*^9}, 3.7195839730899105`*^9, {
+   3.7199084765365763`*^9, 3.71990847872058*^9}, {3.7199201608816595`*^9, 
+   3.719920166045268*^9}, {3.7205167520653343`*^9, 3.7205167531773467`*^9}, {
+   3.720516894925544*^9, 3.7205168994247484`*^9}, {3.720516961098483*^9, 
+   3.720516988555786*^9}, {3.726565473069023*^9, 3.726565473599424*^9}, {
+   3.726565595357638*^9, 3.726565595981639*^9}, 3.7265664880150948`*^9, {
+   3.7265670551558924`*^9, 3.7265670683379154`*^9}, {3.7270176086550517`*^9, 
+   3.7270176093270903`*^9}, {3.7270176585179033`*^9, 
+   3.7270176637262015`*^9}, {3.727169747205127*^9, 3.7271697485941486`*^9}, {
+   3.7271698598935213`*^9, 
+   3.72716987379618*^9}},ExpressionUUID->"fa72fd8a-9075-4601-b763-\
+a924770d5a27"],
+
+Cell[BoxData[
+ RowBox[{"RawSolutions", "=", 
+  RowBox[{"PrimeSets", "[", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"CyclinD1", "\[Rule]", "True"}], ",", 
+       RowBox[{"EGFR", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"CyclinD1", "\[Rule]", "True"}], ",", 
+       RowBox[{"FGFR3", "\[Rule]", "True"}], ",", 
+       RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"CyclinD1", "\[Rule]", "True"}], ",", 
+       RowBox[{"PI3K", "\[Rule]", "True"}], ",", 
+       RowBox[{"RAS", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+       RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+       RowBox[{"MDM2", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+       RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+       RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+       RowBox[{"FGFR3", "\[Rule]", "True"}], ",", 
+       RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+       RowBox[{"PI3K", "\[Rule]", "True"}], ",", 
+       RowBox[{"RAS", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+       RowBox[{"TP53", "\[Rule]", "False"}], ",", 
+       RowBox[{"EGFR", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"RB1", "\[Rule]", "False"}], ",", 
+       RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+       RowBox[{"EGFR", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+       RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+       RowBox[{"MDM2", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+       RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+       RowBox[{"p16INK4a", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+       RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+       RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+       RowBox[{"FGFR3", "\[Rule]", "True"}], ",", 
+       RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+       RowBox[{"PI3K", "\[Rule]", "True"}], ",", 
+       RowBox[{"RAS", "\[Rule]", "True"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+       RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+       RowBox[{"TP53", "\[Rule]", "False"}], ",", 
+       RowBox[{"EGFR", "\[Rule]", "True"}]}], "}"}]}], "}"}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.7270176952290034`*^9, 3.727017697318123*^9}, {
+  3.727085965263508*^9, 3.727085965793509*^9}, {3.7271698229190636`*^9, 
+  3.727169838710779*^9}},ExpressionUUID->"3ab33d6e-088a-4429-a15c-\
+386b63362e8e"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Solutions Analysis", "Section",
+ CellChangeTimes->{{3.7247590056569705`*^9, 3.7247590080281744`*^9}, {
+   3.7265650683521113`*^9, 3.7265650743425217`*^9}, {3.7265651997989426`*^9, 
+   3.7265652083945575`*^9}, 3.7265653690012407`*^9, {3.7270183399618797`*^9, 
+   3.727018356327816*^9}},ExpressionUUID->"14dd062e-9c16-4646-9e4c-\
+53bafd270fad"],
+
+Cell[CellGroupData[{
+
+Cell["Oncogenes versus Tumor Supressors", "Subsection",
+ CellChangeTimes->{{3.727018387760614*^9, 
+  3.7270183969991426`*^9}},ExpressionUUID->"242c29bb-26df-40ce-8c82-\
+80ffa4007420"],
+
+Cell["\<\
+Cancer genes are typically classified in either oncogenes or Tumor \
+supressors, oncogenes are frequently overexpressed while tumor supressors are \
+frequently underexpressed in patients with cancer. Therefore, we consider \
+that a variable blocked to False is a tumor supressor, and a variable blocked \
+to True is an oncogene\
+\>", "Text",
+ CellChangeTimes->{{3.727018512624756*^9, 3.7270185759853797`*^9}, {
+  3.727018833713121*^9, 
+  3.7270188915924315`*^9}},ExpressionUUID->"2c507261-080c-40c2-bce2-\
+08d6f89309f5"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"RawPossiblePerturbations", "=", 
+  RowBox[{"DeleteDuplicates", "[", 
+   RowBox[{"Flatten", "[", "RawSolutions", "]"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.7270184015624037`*^9, 3.7270184560815215`*^9}, {
+  3.7270859767445245`*^9, 3.7270859773945255`*^9}, {3.727086920526886*^9, 
+  3.727086921166887*^9}},ExpressionUUID->"03bc7f19-0804-4684-98d4-\
+faf0848393f8"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+   RowBox[{"CyclinD1", "\[Rule]", "True"}], ",", 
+   RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+   RowBox[{"FGFR3", "\[Rule]", "True"}], ",", 
+   RowBox[{"PI3K", "\[Rule]", "True"}], ",", 
+   RowBox[{"RAS", "\[Rule]", "True"}], ",", 
+   RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+   RowBox[{"MDM2", "\[Rule]", "True"}], ",", 
+   RowBox[{"TP53", "\[Rule]", "False"}], ",", 
+   RowBox[{"RB1", "\[Rule]", "False"}], ",", 
+   RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+   RowBox[{"p16INK4a", "\[Rule]", "True"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.7270184362673883`*^9, 3.727018456790562*^9}, 
+   3.727039286834993*^9, 3.7270772075797186`*^9, 3.7270859782345266`*^9, 
+   3.7270869228468895`*^9},ExpressionUUID->"b7a05f1b-1dd1-4a93-b200-\
+0804b446db3e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"oncogenes", "=", 
+  RowBox[{"Oncogenes", "[", "RawPossiblePerturbations", "]"}]}]], "Input",
+ CellChangeTimes->{{3.7207764201314487`*^9, 3.7207764377194543`*^9}, 
+   3.7207769496137333`*^9, {3.7270184673691673`*^9, 3.7270184731614985`*^9}, {
+   3.7270185910972443`*^9, 3.727018592905348*^9}, {3.7270869265568943`*^9, 
+   3.727086927196895*^9}},ExpressionUUID->"6c6dee23-a924-48ab-99df-\
+a28f4f1bd9e9"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "CyclinD1", ",", "EGFR", ",", "FGFR3", ",", "PI3K", ",", "RAS", ",", "MDM2",
+    ",", "p16INK4a"}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.7207764388955216`*^9, 3.720776950317773*^9, {3.720780312188061*^9, 
+   3.720780324591771*^9}, 3.7207805104244*^9, {3.7207806463051715`*^9, 
+   3.72078067005453*^9}, 3.7270185974146056`*^9, 3.727077207739719*^9, 
+   3.7270869280068965`*^9},ExpressionUUID->"0f6f9fb5-30ba-4405-aa9c-\
+2aa7991469bf"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"tumorSupressors", "=", 
+  RowBox[{
+  "TumorSuppressors", "[", "RawPossiblePerturbations", "]"}]}]], "Input",
+ CellChangeTimes->{{3.727018726539991*^9, 3.727018748309236*^9}, {
+  3.727086931566901*^9, 
+  3.727086932016902*^9}},ExpressionUUID->"72023595-dc65-436a-8f6e-\
+5d33e02659ae"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"E2F3", ",", "p16INK4a", ",", "TP53", ",", "RB1", ",", "RBL2"}], 
+  "}"}]], "Output",
+ CellChangeTimes->{3.7270187493472958`*^9, 3.727077207779719*^9, 
+  3.727086932726903*^9},ExpressionUUID->"562e9d25-3257-4b4b-929f-\
+d7d3eabca8df"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"undef", "=", 
+  RowBox[{"Intersection", "[", 
+   RowBox[{"oncogenes", ",", "tumorSupressors"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.7270187776499147`*^9, 3.727018790326639*^9}, {
+  3.7270869474369235`*^9, 
+  3.7270869487069254`*^9}},ExpressionUUID->"338fb3ce-51e5-47e2-bd24-\
+8c241882e430"],
+
+Cell[BoxData[
+ RowBox[{"{", "p16INK4a", "}"}]], "Output",
+ CellChangeTimes->{3.727018791527708*^9, 3.727077207819719*^9, 
+  3.7270869493069263`*^9},ExpressionUUID->"ddebfeb6-7ef4-435d-ad7d-\
+e6db457d9eca"]
+}, Open  ]],
+
+Cell["\<\
+E2F3 is typically defined as an oncogene, and one of the more important in \
+Bladder Cancer (see https://www.nature.com/articles/1207274), however, here \
+it is identified as a tumor supressor, and moreover, in all the solutions! \
+This suggests that there is a problem in the definition of the role of E2F3 \
+in the model.
+
+p16INK4A is typically identified as a tumor suppressor. Here, it is \
+identified as an oncogene or a tumor suppressor, depending on the mutational \
+context. It is quite an interesting aspect of the solutions since in two \
+publications :https://www.nature.com/articles/onc2010614, \
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3685613/, it is described that \
+both overexpression AND underexpression of p16INK4A are observed in cancer, \
+suggesting that is has a more complex role. p16INK4A is an oncogene when \
+combined with RBL2 underexpression and a tumor suppressor combined with MDM2, \
+TP53,FGF3,RAS,PI3K (very common perturbations than RBL2, not s uprising that \
+in most of the cases, p16INK4A is a tumor suppressor)
+
+All the other genes are correctly identified (check if other genes may have \
+the double role). Therefore, on a set 12 genes, the solutions discriminate \
+oncogenes from tumor suppressor on 11/12 genes. That is very improbable that \
+it is dur to randomness.\
+\>", "Text",
+ CellChangeTimes->{{3.727018512624756*^9, 3.7270185759853797`*^9}, {
+   3.7270188015522814`*^9, 3.727018830323927*^9}, {3.727018915590804*^9, 
+   3.727019090064783*^9}, {3.727019289685201*^9, 3.7270192992217464`*^9}, {
+   3.7270194245099125`*^9, 3.727019518459286*^9}, {3.7270196330368395`*^9, 
+   3.727019668093845*^9}, {3.7270197390369024`*^9, 3.7270197915489063`*^9}, {
+   3.727019827036936*^9, 3.7270198392846365`*^9}, {3.727020514688267*^9, 
+   3.727020649444975*^9}, {3.727020723127189*^9, 3.7270207641295347`*^9}, 
+   3.7270860114465733`*^9, 3.7270867882297*^9, {3.727160721846674*^9, 
+   3.727160729181674*^9}, {3.7271610213233776`*^9, 
+   3.727161025060218*^9}},ExpressionUUID->"f92e72ff-ca7b-423f-833c-\
+41389ef010ef"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Select", "[", 
+  RowBox[{"RawSolutions", ",", 
+   RowBox[{
+    RowBox[{"MemberQ", "[", 
+     RowBox[{"#", ",", 
+      RowBox[{"p16INK4a", "\[Rule]", "False"}]}], "]"}], "&"}]}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.7270191131361027`*^9, 3.727019151147277*^9}, {
+  3.727086956227936*^9, 
+  3.7270869630779457`*^9}},ExpressionUUID->"01486259-61a6-4a7a-81e0-\
+ed5ad17960f7"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"MDM2", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+     RowBox[{"FGFR3", "\[Rule]", "True"}], ",", 
+     RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+     RowBox[{"PI3K", "\[Rule]", "True"}], ",", 
+     RowBox[{"RAS", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+     RowBox[{"TP53", "\[Rule]", "False"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}]}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.727019134345316*^9, 3.7270191554175215`*^9}, 
+   3.727077207859719*^9, {3.7270869574179373`*^9, 
+   3.7270869636979465`*^9}},ExpressionUUID->"ba2d16ac-5cba-4c9f-8b22-\
+4624471b6fad"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Select", "[", 
+  RowBox[{"RawSolutions", ",", 
+   RowBox[{
+    RowBox[{"MemberQ", "[", 
+     RowBox[{"#", ",", 
+      RowBox[{"p16INK4a", "\[Rule]", "True"}]}], "]"}], "&"}]}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.7270191641500206`*^9, 3.7270191651180763`*^9}, {
+  3.727086967167951*^9, 
+  3.727086967647952*^9}},ExpressionUUID->"2d9e4dfe-e085-44f3-92d9-\
+2e41988646fc"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"E2F3", "\[Rule]", "False"}], ",", 
+    RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+    RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+    RowBox[{"p16INK4a", "\[Rule]", "True"}]}], "}"}], "}"}]], "Output",
+ CellChangeTimes->{3.7270191661581354`*^9, 3.727077207899719*^9, 
+  3.7270869682979527`*^9},ExpressionUUID->"d6ede85b-bdfc-4a40-9453-\
+241d721b25d3"]
+}, Open  ]],
+
+Cell["\<\
+From now, we will do the computation on the solutions set where the solutions \
+are deprived of E2F3->False \
+\>", "Text",
+ CellChangeTimes->{{3.727018512624756*^9, 3.7270185759853797`*^9}, {
+  3.7270188015522814`*^9, 3.727018830323927*^9}, {3.727018915590804*^9, 
+  3.727019090064783*^9}, {3.727019289685201*^9, 3.7270192992217464`*^9}, {
+  3.7270194245099125`*^9, 3.727019518459286*^9}, {3.7270196330368395`*^9, 
+  3.727019668093845*^9}, {3.7270197390369024`*^9, 3.7270197915489063`*^9}, {
+  3.727019827036936*^9, 3.7270198392846365`*^9}, {3.7270203082714605`*^9, 
+  3.727020362294551*^9}},ExpressionUUID->"36215704-e8c2-48dc-9624-\
+4dc987ede15f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"SolutionSet", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"DeleteCases", "[", 
+     RowBox[{"#", ",", 
+      RowBox[{"E2F3", "\[Rule]", "False"}]}], "]"}], "&"}], "/@", 
+   "RawSolutions"}]}]], "Input",
+ CellChangeTimes->{{3.7270023478674936`*^9, 3.7270023811903996`*^9}, {
+  3.7270041098342724`*^9, 3.727004126552229*^9}, {3.7270041977062984`*^9, 
+  3.7270042458890543`*^9}, {3.727020452359702*^9, 3.727020463269326*^9}, {
+  3.7270870831941137`*^9, 
+  3.727087083804115*^9}},ExpressionUUID->"0e1e7fcc-bd93-4d76-9bdc-\
+b997c35aa98d"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"CyclinD1", "\[Rule]", "True"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"CyclinD1", "\[Rule]", "True"}], ",", 
+     RowBox[{"FGFR3", "\[Rule]", "True"}], ",", 
+     RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"CyclinD1", "\[Rule]", "True"}], ",", 
+     RowBox[{"PI3K", "\[Rule]", "True"}], ",", 
+     RowBox[{"RAS", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"MDM2", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+     RowBox[{"FGFR3", "\[Rule]", "True"}], ",", 
+     RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+     RowBox[{"PI3K", "\[Rule]", "True"}], ",", 
+     RowBox[{"RAS", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+     RowBox[{"TP53", "\[Rule]", "False"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"RB1", "\[Rule]", "False"}], ",", 
+     RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"MDM2", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+     RowBox[{"FGFR3", "\[Rule]", "True"}], ",", 
+     RowBox[{"PI3K", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+     RowBox[{"PI3K", "\[Rule]", "True"}], ",", 
+     RowBox[{"RAS", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+     RowBox[{"TP53", "\[Rule]", "False"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}]}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.7270023635223894`*^9, 3.72700238171843*^9}, {
+   3.727004127865304*^9, 3.727004136136777*^9}, {3.727004221280647*^9, 
+   3.7270042465770936`*^9}, 3.7270204644093914`*^9, 3.72703944186186*^9, 
+   3.7270772079597187`*^9, 
+   3.727087084434116*^9},ExpressionUUID->"74721860-518b-41f6-9fc9-\
+6e0474d6bfad"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PerturbationSet", "=", 
+  RowBox[{"DeleteCases", "[", 
+   RowBox[{"RawPossiblePerturbations", ",", 
+    RowBox[{"E2F3", "\[Rule]", "False"}]}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.7270871611972237`*^9, 
+  3.7270871808672504`*^9}},ExpressionUUID->"d6ca7386-d670-4dbb-97ce-\
+a1634a9bf610"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"CyclinD1", "\[Rule]", "True"}], ",", 
+   RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+   RowBox[{"FGFR3", "\[Rule]", "True"}], ",", 
+   RowBox[{"PI3K", "\[Rule]", "True"}], ",", 
+   RowBox[{"RAS", "\[Rule]", "True"}], ",", 
+   RowBox[{"p16INK4a", "\[Rule]", "False"}], ",", 
+   RowBox[{"MDM2", "\[Rule]", "True"}], ",", 
+   RowBox[{"TP53", "\[Rule]", "False"}], ",", 
+   RowBox[{"RB1", "\[Rule]", "False"}], ",", 
+   RowBox[{"RBL2", "\[Rule]", "False"}], ",", 
+   RowBox[{"p16INK4a", "\[Rule]", "True"}]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.7270871814372516`*^9},ExpressionUUID->"3a8b81c2-0c58-497b-b782-\
+3df54ba985e6"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Redundancy", "Subsection",
+ CellChangeTimes->{{3.727018387760614*^9, 3.7270183969991426`*^9}, {
+  3.7270198844992228`*^9, 
+  3.7270198922026634`*^9}},ExpressionUUID->"dd1ed6b6-6aad-467b-8259-\
+371a4197c2b4"],
+
+Cell["\<\
+Functional redundancy is a way to explain the mutual exclusivity patterns of \
+mutations observed in tumors: if there is no selective advantage for the \
+tumor cell to mutate a gene a when a gene b is already mutated, genes a and b \
+will appear mutual exclusive in datasets. \
+\>", "Text",
+ CellChangeTimes->{{3.727018512624756*^9, 3.7270185759853797`*^9}, {
+   3.7270188015522814`*^9, 3.727018830323927*^9}, {3.727018915590804*^9, 
+   3.727019090064783*^9}, {3.727019289685201*^9, 3.7270192992217464`*^9}, {
+   3.7270194245099125`*^9, 3.727019518459286*^9}, {3.7270196330368395`*^9, 
+   3.727019668093845*^9}, {3.7270197390369024`*^9, 3.7270197915489063`*^9}, {
+   3.727019827036936*^9, 3.7270198392846365`*^9}, {3.7270199361071744`*^9, 
+   3.7270199681790085`*^9}, {3.727020160954035*^9, 3.7270202869202394`*^9}, {
+   3.7270204832734704`*^9, 3.7270204838185015`*^9}, 3.7270207832696295`*^9, {
+   3.72708702334103*^9, 
+   3.7270870250610323`*^9}},ExpressionUUID->"4ea43b85-73e6-4e79-a65e-\
+60a8cdbfcb85"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"redundantpairs", "=", 
+  RowBox[{"Select", "[", 
+   RowBox[{
+    RowBox[{"ME", "=", 
+     RowBox[{"MutualExclusivity", "[", 
+      RowBox[{"RawPossiblePerturbations", ",", "SolutionSet", ",", "2"}], 
+      "]"}]}], ",", 
+    RowBox[{
+     RowBox[{"RedundantQ", "[", 
+      RowBox[{"#", ",", "SolutionSet"}], "]"}], "&"}]}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.7210479084794254`*^9, 3.721048006245797*^9}, {
+  3.7210480372450514`*^9, 3.721048118326394*^9}, {3.7211114646267185`*^9, 
+  3.7211114687295256`*^9}, {3.727020913815096*^9, 3.727020948628087*^9}, {
+  3.7270871284761777`*^9, 3.72708713037618*^9}, {3.727087207289288*^9, 
+  3.7270872078792887`*^9}},ExpressionUUID->"d11b7d52-1bb7-422c-89bf-\
+b6855b10f07d"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"FGFR3", "\[Rule]", "True"}], ",", 
+     RowBox[{"RAS", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"MDM2", "\[Rule]", "True"}], ",", 
+     RowBox[{"TP53", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"RB1", "\[Rule]", "False"}], ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "True"}]}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.721047939133479*^9, 3.7210481202607975`*^9, 
+  3.7211114690727262`*^9, 3.7211362482587*^9, 3.72702094955914*^9, 
+  3.727077398315987*^9, 
+  3.7270872105092926`*^9},ExpressionUUID->"abeb6830-370f-47e9-8ddb-\
+63bede2b9af6"]
+}, Open  ]],
+
+Cell["\<\
+testeer si l' addition d' un mut redondante fonctionelle conserve bien les m\
+\[EHat]me \[EAcute]tats stables\
+\>", "Text",
+ CellChangeTimes->{{3.727162151027766*^9, 
+  3.7271621878712335`*^9}},ExpressionUUID->"3b497079-1b6f-4f37-a7e7-\
+ba3600a38e83"],
+
+Cell["\<\
+Alterations in RB1 and p16INK4A are reported mutual exclusive in several \
+dataset, however this concerns mostly inactivating mutations of RB1, and \
+deletions of CDKN2A. 
+While redundancies between FGFR3/RAS and MDM2/TP53 are widely known.
+
+Compared to the Analysis made in Remy and al, we do not find redundancies \
+between TP53/FGFR3 and E2F3/FGFR3. considering the \
+\>", "Text",
+ CellChangeTimes->{{3.727021247330172*^9, 3.7270213713182635`*^9}, {
+   3.7270218715958776`*^9, 3.7270219198196363`*^9}, {3.727023202669011*^9, 
+   3.7270232028580217`*^9}, 
+   3.727028013350992*^9},ExpressionUUID->"9939c656-55d2-438e-9e24-\
+80738a9971a6"],
+
+Cell["\<\
+Such feature should appear in our modelling framework since we compute the \
+minimal solutions. 
+
+
+Other interesting article on different oncogenic pathways: In   \
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3369837/, : \
+\[OpenCurlyDoubleQuote]6p22 and RB1 alterations were associated with a \
+relative overexpression of CDKN2A\[CloseCurlyDoubleQuote]
+2 different pathways based on the expression of CDKN2A??
+\
+\>", "Text",
+ CellChangeTimes->{{3.7270207850427303`*^9, 3.727020792169138*^9}, {
+   3.7270220088667297`*^9, 3.727022024346615*^9}, {3.727022342233797*^9, 
+   3.727022403844321*^9}, {3.7270224551222534`*^9, 3.7270224553122644`*^9}, 
+   3.727022823383317*^9, {3.7270228688159156`*^9, 3.727022871439066*^9}, {
+   3.727023065999194*^9, 3.7270230693183837`*^9}, 3.7270231890772333`*^9, {
+   3.7270868139007363`*^9, 
+   3.727086819541744*^9}},ExpressionUUID->"107213c0-83e5-4c92-a158-\
+92d41d426c9d"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Solutions Formatting for analysis", "Section",
+ CellChangeTimes->{{3.7247590056569705`*^9, 3.7247590080281744`*^9}, {
+   3.7265650683521113`*^9, 3.7265650743425217`*^9}, {3.7265651997989426`*^9, 
+   3.7265652083945575`*^9}, 3.7265653690012407`*^9, {3.7270183399618797`*^9, 
+   3.727018356327816*^9}, {3.727093028099468*^9, 
+   3.7270930327894754`*^9}},ExpressionUUID->"5c7f9c43-dbea-48e3-8496-\
+b66eaa750734"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"FormattedSol", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"SolFormatting", "[", "#", "]"}], "&"}], "/@", 
+   "SolutionSet"}]}]], "Input",
+ CellChangeTimes->{{3.7270930343294773`*^9, 
+  3.727093057159509*^9}},ExpressionUUID->"996e45e5-43e3-4f4f-99a3-\
+2bc75766ef99"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"CyclinD1", "\[Rule]", "True"}], ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"FGFR3", ",", "PI3K", ",", 
+     RowBox[{"CyclinD1", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"PI3K", ",", "RAS", ",", 
+     RowBox[{"CyclinD1", "\[Rule]", "True"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"MDM2", "\[Rule]", "True"}], ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"PI3K", ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"FGFR3", ",", "PI3K", ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"PI3K", ",", "RAS", ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"TP53", ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"RB1", "\[Rule]", "False"}], ",", 
+     RowBox[{"RBL2", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"MDM2", "\[Rule]", "True"}], ",", 
+     RowBox[{"RBL2", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"p16INK4a", "\[Rule]", "True"}], ",", 
+     RowBox[{"RBL2", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"PI3K", ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"RBL2", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"FGFR3", ",", "PI3K", ",", 
+     RowBox[{"RBL2", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"PI3K", ",", "RAS", ",", 
+     RowBox[{"RBL2", "\[Rule]", "False"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"TP53", ",", 
+     RowBox[{"EGFR", "\[Rule]", "True"}], ",", 
+     RowBox[{"RBL2", "\[Rule]", "False"}]}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.727093059169512*^9},ExpressionUUID->"7697f47f-21ab-4581-a926-\
+83081df2f010"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PerturbationFrequence", "[", "FormattedSol", "]"}]], "Input",
+ CellChangeTimes->{{3.727093069339526*^9, 
+  3.7270930815805435`*^9}},ExpressionUUID->"94a155fd-4d07-4b50-8f8d-\
+eadec9b4c358"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"FGFR3", "PI3K", "RAS", "TP53", 
+     RowBox[{"CyclinD1", "\[Rule]", "True"}], 
+     RowBox[{"EGFR", "\[Rule]", "True"}], 
+     RowBox[{"MDM2", "\[Rule]", "True"}], 
+     RowBox[{"p16INK4a", "\[Rule]", "False"}], 
+     RowBox[{"p16INK4a", "\[Rule]", "True"}], 
+     RowBox[{"RB1", "\[Rule]", "False"}], 
+     RowBox[{"RBL2", "\[Rule]", "False"}]},
+    {"19.9999999999999999989`3.", "53.3333333333333333359`3.", 
+     "19.9999999999999999989`3.", "13.3333333333333333326`3.", 
+     "19.9999999999999999989`3.", "60.0000000000000000022`3.", 
+     "13.3333333333333333326`3.", "33.3333333333333333315`3.", 
+     "6.6666666666666666663`3.", "6.6666666666666666663`3.", 
+     "46.6666666666666666641`3."}
+   },
+   AutoDelete->False,
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{
+  3.7270930820705442`*^9},ExpressionUUID->"fc3c3504-9ea6-402d-b4e3-\
+954979f8c7c3"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1280, 627},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"11.2 for Microsoft Windows (64-bit) (September 10, 2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 352, 5, 96, "Title",ExpressionUUID->"e78a271f-5ea1-4d1e-9b33-77c77cb1b055"],
+Cell[935, 29, 327, 7, 34, "Text",ExpressionUUID->"0d78c847-2351-4aec-8680-c53e7285c944"],
+Cell[CellGroupData[{
+Cell[1287, 40, 283, 6, 28, "Input",ExpressionUUID->"8f39a2d4-9907-4777-bde9-fd438b5c34ca"],
+Cell[1573, 48, 850, 13, 32, "Output",ExpressionUUID->"2d93e1ef-56a9-4122-b241-da9d3801fe0f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2460, 66, 353, 5, 67, "Section",ExpressionUUID->"2dd918be-20f1-4114-90f0-19ef02174175"],
+Cell[CellGroupData[{
+Cell[2838, 75, 216, 4, 53, "Subsection",ExpressionUUID->"376dfa3a-b959-4764-a142-f2fe30c105ae"],
+Cell[3057, 81, 230, 5, 34, "Text",ExpressionUUID->"750ca705-169e-49b1-870c-626a06557109"],
+Cell[3290, 88, 7309, 194, 276, "Input",ExpressionUUID->"9f23bd3d-2942-4d8a-b8d6-8b948b7e1efe"],
+Cell[CellGroupData[{
+Cell[10624, 286, 250, 5, 28, "Input",ExpressionUUID->"36ff1395-25cb-49b6-b577-479a84c4e5e3"],
+Cell[10877, 293, 4416, 81, 718, "Output",ExpressionUUID->"332e556e-adf0-4781-8063-22f2e06314e2"]
+}, Open  ]],
+Cell[15308, 377, 154, 3, 28, "Input",ExpressionUUID->"46ec3e94-a1ed-48f8-8195-8b9997d89ebf"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15499, 385, 269, 4, 53, "Subsection",ExpressionUUID->"80af4296-e83d-44ed-a135-546490e2f6fd"],
+Cell[15771, 391, 258, 6, 34, "Text",ExpressionUUID->"2ef91284-bde7-4ee6-bc29-8c41844cdaf4"],
+Cell[CellGroupData[{
+Cell[16054, 401, 752, 13, 28, "Input",ExpressionUUID->"200574e2-d517-457e-ab5c-b2252f7fd1d1"],
+Cell[16809, 416, 586, 11, 32, "Output",ExpressionUUID->"8f3dac0d-60c8-432e-8a30-820b88c3e57b"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17444, 433, 360, 6, 53, "Subsection",ExpressionUUID->"a6a5608b-8d80-4823-ba26-2ca677cd5251"],
+Cell[17807, 441, 190, 3, 34, "Text",ExpressionUUID->"5d180e14-3686-4e43-9870-ce6211e2d1d6"],
+Cell[CellGroupData[{
+Cell[18022, 448, 397, 8, 28, "Input",ExpressionUUID->"cd96c85d-ca26-420e-934d-565cfd1ab794"],
+Cell[18422, 458, 470, 11, 32, "Output",ExpressionUUID->"3cd6576d-e9f7-4cbb-8fb2-5ef02d103624"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18941, 475, 348, 5, 53, "Subsection",ExpressionUUID->"64f721a4-b63c-47da-80f6-53a9f9358b8f"],
+Cell[19292, 482, 335, 7, 34, "Text",ExpressionUUID->"984a43bc-c973-45d0-9e54-53a1d87d7cdb"],
+Cell[19630, 491, 1027, 17, 28, "Input",ExpressionUUID->"fa72fd8a-9075-4601-b763-a924770d5a27"],
+Cell[20660, 510, 4014, 98, 143, "Input",ExpressionUUID->"3ab33d6e-088a-4429-a15c-386b63362e8e"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[24723, 614, 348, 5, 67, "Section",ExpressionUUID->"14dd062e-9c16-4646-9e4c-53bafd270fad"],
+Cell[CellGroupData[{
+Cell[25096, 623, 183, 3, 53, "Subsection",ExpressionUUID->"242c29bb-26df-40ce-8c82-80ffa4007420"],
+Cell[25282, 628, 530, 10, 56, "Text",ExpressionUUID->"2c507261-080c-40c2-bce2-08d6f89309f5"],
+Cell[CellGroupData[{
+Cell[25837, 642, 390, 7, 28, "Input",ExpressionUUID->"03bc7f19-0804-4684-98d4-faf0848393f8"],
+Cell[26230, 651, 848, 18, 32, "Output",ExpressionUUID->"b7a05f1b-1dd1-4a93-b200-0804b446db3e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27115, 674, 425, 7, 28, "Input",ExpressionUUID->"6c6dee23-a924-48ab-99df-a28f4f1bd9e9"],
+Cell[27543, 683, 480, 10, 32, "Output",ExpressionUUID->"0f6f9fb5-30ba-4405-aa9c-2aa7991469bf"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[28060, 698, 307, 7, 28, "Input",ExpressionUUID->"72023595-dc65-436a-8f6e-5d33e02659ae"],
+Cell[28370, 707, 272, 6, 32, "Output",ExpressionUUID->"562e9d25-3257-4b4b-929f-d7d3eabca8df"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[28679, 718, 319, 7, 28, "Input",ExpressionUUID->"338fb3ce-51e5-47e2-bd24-8c241882e430"],
+Cell[29001, 727, 205, 4, 32, "Output",ExpressionUUID->"ddebfeb6-7ef4-435d-ad7d-e6db457d9eca"]
+}, Open  ]],
+Cell[29221, 734, 2065, 33, 232, "Text",ExpressionUUID->"f92e72ff-ca7b-423f-833c-41389ef010ef"],
+Cell[CellGroupData[{
+Cell[31311, 771, 400, 11, 28, "Input",ExpressionUUID->"01486259-61a6-4a7a-81e0-ed5ad17960f7"],
+Cell[31714, 784, 1444, 36, 71, "Output",ExpressionUUID->"ba2d16ac-5cba-4c9f-8b22-4624471b6fad"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[33195, 825, 399, 11, 28, "Input",ExpressionUUID->"2d9e4dfe-e085-44f3-92d9-2e41988646fc"],
+Cell[33597, 838, 421, 10, 32, "Output",ExpressionUUID->"d6ede85b-bdfc-4a40-9453-241d721b25d3"]
+}, Open  ]],
+Cell[34033, 851, 659, 11, 34, "Text",ExpressionUUID->"36215704-e8c2-48dc-9624-4dc987ede15f"],
+Cell[CellGroupData[{
+Cell[34717, 866, 554, 13, 28, "Input",ExpressionUUID->"0e1e7fcc-bd93-4d76-9bdc-b997c35aa98d"],
+Cell[35274, 881, 3125, 82, 109, "Output",ExpressionUUID->"74721860-518b-41f6-9fc9-6e0474d6bfad"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[38436, 968, 316, 7, 28, "Input",ExpressionUUID->"d6ca7386-d670-4dbb-97ce-a1634a9bf610"],
+Cell[38755, 977, 678, 16, 32, "Output",ExpressionUUID->"3a8b81c2-0c58-497b-b782-3df54ba985e6"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[39482, 999, 213, 4, 53, "Subsection",ExpressionUUID->"dd1ed6b6-6aad-467b-8259-371a4197c2b4"],
+Cell[39698, 1005, 1016, 16, 56, "Text",ExpressionUUID->"4ea43b85-73e6-4e79-a65e-60a8cdbfcb85"],
+Cell[CellGroupData[{
+Cell[40739, 1025, 742, 16, 28, "Input",ExpressionUUID->"d11b7d52-1bb7-422c-89bf-b6855b10f07d"],
+Cell[41484, 1043, 706, 19, 32, "Output",ExpressionUUID->"abeb6830-370f-47e9-8ddb-63bede2b9af6"]
+}, Open  ]],
+Cell[42205, 1065, 261, 6, 34, "Text",ExpressionUUID->"3b497079-1b6f-4f37-a7e7-ba3600a38e83"],
+Cell[42469, 1073, 650, 13, 100, "Text",ExpressionUUID->"9939c656-55d2-438e-9e24-80738a9971a6"],
+Cell[43122, 1088, 919, 19, 166, "Text",ExpressionUUID->"107213c0-83e5-4c92-a158-92d41d426c9d"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[44090, 1113, 415, 6, 67, "Section",ExpressionUUID->"5c7f9c43-dbea-48e3-8496-b66eaa750734"],
+Cell[CellGroupData[{
+Cell[44530, 1123, 287, 8, 28, "Input",ExpressionUUID->"996e45e5-43e3-4f4f-99a3-2bc75766ef99"],
+Cell[44820, 1133, 2340, 63, 90, "Output",ExpressionUUID->"7697f47f-21ab-4581-a926-83081df2f010"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[47197, 1201, 213, 4, 28, "Input",ExpressionUUID->"94a155fd-4d07-4b50-8f8d-eadec9b4c358"],
+Cell[47413, 1207, 1028, 23, 58, "Output",ExpressionUUID->"fc3c3504-9ea6-402d-b4e3-954979f8c7c3"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
