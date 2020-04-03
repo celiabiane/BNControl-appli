@@ -13,3 +13,4 @@ The model of Bladder cancer and the data come from :
 
 Remy, E., Rebouissou, S., Chaouiya, C., Zinovyev, A., Radvanyi, F., & Calzone, L. (2015). A modeling approach to explain mutually exclusive and co-occurring genetic alterations in bladder tumorigenesis. Cancer research, 75(19), 4042-4052.
 REMY, Elisabeth, REBOUISSOU, Sandra, CHAOUIYA, Claudine, et al. A modeling approach to explain mutually exclusive and co-occurring genetic alterations in bladder tumorigenesis. Cancer research, 2015, vol. 75, no 19, p. 4042-4052.
+  
